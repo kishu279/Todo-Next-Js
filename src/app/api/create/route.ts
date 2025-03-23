@@ -13,6 +13,8 @@ interface todoData {
 export async function POST(request: Request) {
   const data: todoData = await request.json();
 
+  console.log(data);
+
   // validating the data
   const validatedData = todo.safeParse(data);
 
@@ -20,7 +22,7 @@ export async function POST(request: Request) {
     return new Response("Validation Error", {
       status: 400,
       headers: {
-        "Contend-Type": "application/json",
+        "Content-Type": "application/json",
       },
     });
   } else {
@@ -33,6 +35,15 @@ export async function POST(request: Request) {
       data: validatedData.data,
     });
 
+    // const response = await prisma.todos.upsert({
+    //   where: { userId: validatedData.data },
+    //   update: {
+    //     todo: validatedData.data.todo,
+    //     completed: validatedData.data.completed,
+    //   },
+    //   create: validatedData.data,
+    // });
+
     console.log(response);
 
     return new Response(JSON.stringify("created successfully"), {
@@ -42,7 +53,8 @@ export async function POST(request: Request) {
       },
     });
   } catch (err) {
-    return new Response(err as string, {
+    console.log(err);
+    return new Response(JSON.stringify({ error: err.message }), {
       status: 400,
       headers: {
         "Contend-Type": "application/json",

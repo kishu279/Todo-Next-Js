@@ -22,6 +22,9 @@ export function Create() {
   const { isSignedIn, user, isLoaded } = useUser();
 
   async function handleSave() {
+    if (!userId) {
+      throw new Error("ueser objk");
+    }
     // Creating Object
     // upon each request we are sending the userId to differentiate
 
@@ -32,6 +35,8 @@ export function Create() {
         todo: todoText,
         completed: false,
       });
+
+      console.log(newTodo);
 
       const response = await axios.post(
         "http://localhost:3000/api/create",
@@ -52,15 +57,12 @@ export function Create() {
         console.error(response.data);
       }
     } catch (err) {
-      throw new Error(err as string);
+      // throw new Error(err.message);
+      console.error("ERror Occurred");
     }
   }
 
-  async function handleUser() {
-    const { user, isLoaded, isSignedIn } = useUser();
-
-    if (isLoaded && isSignedIn) [setUserId(user.id)];
-  }
+  async function handleUser() {}
 
   useEffect(() => {
     axios
@@ -74,9 +76,15 @@ export function Create() {
     handleUser();
   }, []);
 
-  // useEffect(() => {
-  //   console.log(todos);
-  // }, [todos]);
+  useEffect(() => {
+    console.log(todos);
+
+    if (isLoaded && isSignedIn) {
+      setUserId(user.id);
+    }
+
+    // console.log(user);
+  }, [todos, userId]);
 
   return (
     <>
@@ -91,26 +99,33 @@ export function Create() {
           placeholder="Add Todos..."
         />
         <button
-          className="border border-white p-3 rounded-3xl"
+          className="border border-white p-3 rounded-3xl "
           onClick={() => {
             handleSave();
           }}
         >
-          save
+          +
         </button>
       </div>
 
-      <div>
+      <div className=" h-[500px] mt-[50px] overflow-y-auto cursor-pointer select-none">
         {todos.map((todo) => (
-          <div key={todo.id}>
-            <p>{todo.todo}</p>
-            <input
-              type="checkbox"
-              // value={todo.completed}
+          <div
+            key={todo.id}
+            className=" flex rounded-3xl p-3 hover:bg-amber-300 "
+          >
+            <p
               onClick={() => {
-                todo.completed = true;
+                console.log("clicked");
+
+                
               }}
-            />
+              className={`w-[500px] overflow-hidden text-ellipsis whitespace-nowrap hover:whitespace-normal ${
+                !todo.completed ? console.log("false") : console.log("true")
+              }`}
+            >
+              {todo.todo}
+            </p>
           </div>
         ))}
       </div>

@@ -15,7 +15,7 @@ datasource db {
 
 model todos {
   id        Int         @id  @default(autoincrement())
-  userId    String      @unique
+  userId    String      
   todo      String      
   completed Boolean     @default(false)
 }

@@ -10,11 +10,11 @@ export default function Page() {
   return (
     <>
       <div className="select-none">
-        <div className="text-[350px] ml-[100px] mt-[100px] absolute font-mono font-extralight italic text-gray-400 ">
+        <div className="text-[350px] ml-[100px] mt-[80px] absolute font-mono font-extralight italic text-gray-400 ">
           Todo
         </div>
         <hr className="relative top-[400px]" />
-        <div className="text-7xl ml-[350px] absolute top-[480px] left-[200px] italic">
+        <div className="text-7xl ml-[350px] absolute top-[530px] left-[200px] italic">
           Gives you a way to-do :)
         </div>
 

@@ -1,6 +1,8 @@
-import prisma from "@/lib/prisma/db/prisma";
+import prisma from "@/lib/db/prisma";
+import { useUser } from "@clerk/nextjs";
 
 export async function GET(request: Request) {
+  // const user = await useUser();
   // make it better
   try {
     const response = await prisma.todos.findMany();

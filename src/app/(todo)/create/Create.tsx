@@ -1,30 +1,38 @@
 "use client";
 
+import { todo } from "@/lib/validation/schema";
+import { useUser } from "@clerk/nextjs";
 import axios from "axios";
 import { ChangeEvent, useEffect, useState } from "react";
 
 // Single Todo
-interface todo {
+interface todoType {
   // id: number;
+  id?: number;
   todo: string;
   completed: boolean;
 }
 
 // Creation of Todos in CreateTodo Page
 export function Create() {
-  const [todo, setTodo] = useState<string>("");
-  const [todos, setTodos] = useState<todo[]>([]);
+  const [todoText, setTodo] = useState<string>("");
+  const [todos, setTodos] = useState<todoType[]>([]);
+  const [userId, setUserId] = useState<string>("");
+
+  const { isSignedIn, user, isLoaded } = useUser();
 
   async function handleSave() {
     // Creating Object
-    const newTodo: todo = { todo: todo, completed: false };
-
-    // Saving the object
-    // setTodos((prev) => [...prev, newTodo]);
-    // instead of storing in frontend server in client side we can just send the request to the backend to save it in db \
-    // console.log(newTodo);
+    // upon each request we are sending the userId to differentiate
 
     try {
+      //valiate the data
+      const newTodo = todo.parse({
+        userId: userId,
+        todo: todoText,
+        completed: false,
+      });
+
       const response = await axios.post(
         "http://localhost:3000/api/create",
         newTodo,
@@ -48,15 +56,27 @@ export function Create() {
     }
   }
 
+  async function handleUser() {
+    const { user, isLoaded, isSignedIn } = useUser();
+
+    if (isLoaded && isSignedIn) [setUserId(user.id)];
+  }
+
   useEffect(() => {
     axios
-      .get("http://localhost:3000/api/todos", {
+      .get("/api/todos", {
         headers: {
           "Content-Type": "application/json",
         },
       })
       .then((res) => setTodos(res.data));
+
+    handleUser();
   }, []);
+
+  // useEffect(() => {
+  //   console.log(todos);
+  // }, [todos]);
 
   return (
     <>
@@ -64,7 +84,7 @@ export function Create() {
         <input
           className="border h-[50px] w-[400px] rounded-2xl p-3"
           type="text"
-          value={todo}
+          value={todoText}
           onChange={(e: ChangeEvent<HTMLInputElement>) => {
             setTodo(e.target.value);
           }}
@@ -80,7 +100,20 @@ export function Create() {
         </button>
       </div>
 
-      <div></div>
+      <div>
+        {todos.map((todo) => (
+          <div key={todo.id}>
+            <p>{todo.todo}</p>
+            <input
+              type="checkbox"
+              // value={todo.completed}
+              onClick={() => {
+                todo.completed = true;
+              }}
+            />
+          </div>
+        ))}
+      </div>
     </>
   );
 }

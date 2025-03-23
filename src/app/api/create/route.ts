@@ -1,8 +1,9 @@
 import { todo } from "@/lib/validation/schema";
-import prisma from "../../../lib/prisma/db/prisma";
+import prisma from "../../../lib/db/prisma";
 
 interface todoData {
   // id: number;
+  userId: string;
   todo: string;
   completed: boolean;
 }
@@ -11,12 +12,6 @@ interface todoData {
 
 export async function POST(request: Request) {
   const data: todoData = await request.json();
-
-  // data recieved
-  // console.log(data);
-
-  // pushing the data to local at server only
-  // todos.push(data);
 
   // validating the data
   const validatedData = todo.safeParse(data);
@@ -35,7 +30,7 @@ export async function POST(request: Request) {
   try {
     // sending to the prisma
     const response = await prisma.todos.create({
-      data,
+      data: validatedData.data,
     });
 
     console.log(response);
@@ -54,12 +49,4 @@ export async function POST(request: Request) {
       },
     });
   }
-
-  return new Response(JSON.stringify("The details got successfully"), {
-    status: 200,
-    headers: {
-      "Content-Type": "application/json",
-    },
-  });
 }
-
